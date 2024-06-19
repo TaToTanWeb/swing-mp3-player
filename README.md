@@ -1,1 +1,136 @@
 # swing-mp3-player
+<p><img src="https://telegra.ph/file/21287a0556d81cf1a9822.png" alt="overview"></p>
+<h2>Table of contents</h2>
+<ul>
+                <li><a href="#analisi-dei-requisiti">Analisi dei requisiti</a>
+                <ul>
+                <li><a href="#libreria">Libreria</a></li>
+                <li><a href="#sorgenti">Sorgenti</a></li>
+                <li><a href="#riproduttore">Riproduttore</a></li>
+                </ul>
+                </li>
+                <li><a href="#progettazione">Progettazione</a>
+                <ul>
+                <li><a href="#database">Database</a></li>
+                <li><a href="#libreria-1">Libreria</a></li>
+                <li><a href="#sorgenti-1">Sorgenti</a></li>
+                <li><a href="#player">Player</a></li>
+                <li><a href="#diagrammi-delle-interazioni">Diagrammi delle interazioni</a></li>
+                </ul>
+                  <li><a href="#design-pattern">Design pattern utilizzati</a>
+                </li>
+                </ul>
+            <h2 id="analisi-dei-requisiti">Analisi dei requisiti</h2>
+            <p>Il sistema software dovrà fornire all’utente la possibilità di <verbo>ascoltare</verbo> i
+                file musicali contenuti all’interno del proprio computer, tramite una apposita interfaccia grafica
+                suddivisa nelle seguenti <classe>pagine</classe>.</p>
+            <h3 id="libreria">Libreria</h3>
+            <p>Attraverso la pagina della <classe>libreria</classe> si potrà <verbo>visualizzare</verbo> la <attributo>lista</attributo> di <classe>tracce</classe> di cui il
+                sistema ha precedentemente memorizzato il <attributo>percorso file</attributo>. Per ciascuna traccia deve essere <verbo>visualizzato</verbo>
+                un <classe>pannello</classe> contentente il suo <attributo>titolo</attributo>, il <attributo>nome dell’artista</attributo> e un <attributo>pulsante</attributo> che ne <verbo>avvii</verbo> la riproduzione.<br>
+                Se l’utente non ha ancora aggiunto nessuna traccia, dovrà essere <verbo>visualizzato</verbo> un <attributo>testo</attributo> che invita a
+                farlo.</p>
+            <h3 id="sorgenti">Sorgenti</h3>
+            <p>Nella pagina <classe>sorgenti</classe> sarà possibile <verbo>visualizzare</verbo> la <attributo>lista dei percorsi delle cartelle</attributo> in
+                cui il sistema cerca i file audio: questa lista potrà essere modificata <verbo>aggiungendo</verbo> una cartella o
+                <verbo>rimuovendone</verbo> una. L'aggiunta di una cartella dovrà portare alla sua <verbo>scansione</verbo>. La lista dovrà essere <verbo>memorizzata</verbo> in un apposito <classe>database</classe> locale, da cui, ad ogni avvio del sistema, dovrà essere <verbo>letta</verbo>. Il software dovrà poi effettuare nuovamente la <verbo>scansione</verbo> di ciascuna cartella per rilevare eventuali nuovi brani. La scansione consiste nello
+                <verbo>scorrimento</verbo> di tutti i file contenuti nella cartella e nelle varie sotto-cartelle, e nella
+                <verbo>visualizzazione</verbo> della <attributo>lista di tracce</attributo> ottenute nella sezione <classe>Libreria</classe>. Almeno il formato audio MP3 dovrà
+                essere supportato.</p>
+            <h3 id="riproduttore">Riproduttore</h3>
+            <p>La scheda del <classe>riproduttore</classe> fornirà all’utente la possibilità di <verbo>controllare</verbo> l’<attributo>audio</attributo> attualmente in
+                riproduzione: il sistema dovrà <verbo>mostrare</verbo> l’<attributo>immagine di copertina</attributo> del brano, oltre al suo <attributo>titolo</attributo> e a
+                <attributo>quello dell’artista</attributo> che lo interpreta. Durante la riproduzione dovranno inoltre essere disponibili un
+                <attributo>pulsante per <verbo>mettere in pausa</verbo></attributo>, <attributo>uno per <verbo>riprendere</verbo></attributo>, <attributo>uno per <verbo>andare alla canzone successiva</verbo></attributo> e <attributo>
+                    uno per
+                    <verbo>andare alla canzone precedente</verbo>.
+                </attributo>
+                Il sistema dovrà inoltre tenere traccia della <classe>coda di riproduzione</classe>, e riprodurre la traccia successiva nella <attributo>lista</attributo> quando <attributo>quella attualmente in riproduzione</attributo> sarà terminata.
+                <br>
+                Se l’utente non ha ancora avviato un brano, la schermata del riproduttore mostrerà un’<attributo>immagine</attributo> e un
+                <attributo>testo</attributo> predefiniti.</p>
+            <h2 id="progettazione">Progettazione</h2>
+            <p>Segue uno schema scheletro del progetto.
+                La classe <b>Main</b> sarà l'ingresso del programma
+                e si occuperà di creare la finestra (<code>JFrame</code>)
+                e di istanziare e contenere le tre pagine principali: <b>Library</b>,
+                <b>Sources</b> e <b>Player</b>.
+            </p>
+            <img src="https://telegra.ph/file/ba32c52439ff4ecf49a02.png" alt="schema-app">
+            <p>
+                In particolare, Main dovrà essere una sottoclasse di <b>TabsPanel</b>, che si occupa di istanziare il <code>JTabbedPane</code>
+                e di aggiungervi i componenti, che devono implementare l'interfaccia <b>Tab</b>, che fornisce informazioni essenziali
+                per l'utilizzo nel <code>JTabbedPane</code> come il nome del tab e l'icona.
+            </p>
+            <img src="https://telegra.ph/file/e5346b275ad26d5f35fab.png" alt="schema-tabs">
+            <br><br>
+            <h3 id="database">Database</h3>
+            <p>Il database verrà gestito dalla classe Singleton <b>Data</b> utilizzando <a href="https://sqlite.org">SQLite</a>.
+                Si terrà traccia dei brani all'interno del programma e non delle cartelle, per
+                avere subito le loro informazioni a disposizione e non
+                dover effettuare la rilettura dei tag MP3.
+                L'unica tabella esistente dovrà essere simile a quella proposta di seguito.</p>
+            <img src="https://telegra.ph/file/88dec11ce1ebe6b9e7f68.png" alt="data-sql">
+            <p>Sarà disponibile internamente una lista di tracce con lo stesso
+                contenuto del database (<code>localTracksCache</code>) per velocizzare il tempo di lettura
+                e non doversi preoccupare del numero di chiamate effettuate.<br>
+                Le classi interessate potranno inoltre iscriversi per ricevere notifiche
+                ogni volta che il database viene modificato. Ciascuna notifica consisterà
+                in un oggetto della classe <b>TracklistUpdate</b>, in grado di portare
+                informazioni sulla traccia in questione e se questa sia stata aggiunta o rimossa.<br>
+                Un brano verrà rappresentato dalla classe <b>Track</b>, e conterrà
+                una serie di informazioni quali titolo, artista, album e percorso file.
+            </p>
+            <img src="https://telegra.ph/file/145914b3afdfe65f3def1.png" alt="schema-data">
+            <h3 id="libreria-1">Libreria</h3>
+            <p>
+                La pagina della libreria mostrerà la lista di tracce al momento disponibili per la riproduzione. Tale componente sarà internamente
+                suddiviso in tre parti:
+                <ul>
+                    <li><b>TracklistController</b>, utilizzata dal client (in questo caso Library). Istanzia le altre due parti ed espone alcuni dei loro metodi utili all'esterno</li>
+                    <li><b>TracklistModel</b> racchiude i meccanismi interni della classe, come la lista di tracce e metodi per aggiungerne di nuove o rimuoverne di esistenti, o il metodo <code>startPlayback</code> per avviare la riproduzione di un brano. Riceve aggiornamenti sullo stato del database dalla classe <b>Data</b>, e li utilizza per tenere aggiornati i dati interni</li>
+                    <li><b>TracklistView</b> si occupa di mostrare a schermo le tracce in memoria, ricevendo aggiornamenti in tempo reale dal Model.</li>
+                </ul>
+            </p>
+            <img src="https://telegra.ph/file/904d07a808f1897c51c0e.png" alt="schema-tracklist">
+            <h3 id="sorgenti-1">Sorgenti</h3>
+            <p>
+                La pagina delle sorgenti mostrerà la lista di cartelle scansionate e due pulsanti per aggiungere o rimuovere cartelle. Anche questo sarà suddiviso in tre:
+                <ul>
+                    <li><b>LocalController</b>, utilizzata all'esterno, istanzia le altre due parti e ne espone i metodi principali. Gestisce l'input utente trammite click sui pulsanti</li>
+                    <li><b>LocalModel</b> contiene la logica interna, la lista di cartelle e metodi per aggiungerne di nuove o rimuoverne di esistenti, o il metodo <code>scanDirectory</code> per avviare la scansione di una cartella</li>
+                    <li><b>LocalView</b> si occupa di mostrare a schermo la lista delle cartelle e i pulsanti, o un testo di riempimento se non ne sono state selezionate alcune.</li>
+                </ul>
+            </p>
+            <img src="https://telegra.ph/file/d7525cb615d3ed4409e38.png" alt="schema-local">
+            <h3 id="player">Player</h3>
+            <p>
+                Anche la pagina di gestione della musica sarà suddivisa in tre componenti <i>Model</i>, <i>View</i> e <i>Controller</i>.
+                La <b>PlayerView</b> mostrerà le informazioni sul brano ricevute tramite
+                il metodo <code>display(Track)</code> da PlayerModel e i pulsanti,
+                il cui input verrà catturato da <b>PlayerController</b> e inoltrato a <b>PlayerModel</b>,
+                responsabile della logica interna del player, per la quale si serve delle classi offerte dalla libreria <a href="https://jacomp3player.sourceforge.net/">JACo MP3 Player</a>.
+            </p>
+            <img src="https://telegra.ph/file/5c9d5a72b8ab7c41235eb.png">
+            <p>
+                <b>PlayerModel</b> è inizialmente nello stato inattivo, pronto a passare allo stato attivo nel momento in cui l'utente avvia una traccia dalla lista.
+                Se la riproduzione termina e non ci sono tracce in coda, il player tornerà nuovamente nello stato inattivo, in cui verranno mostrati un'immagine e un titolo
+                predefiniti e le operazioni di <code>previous</code>, <code>play</code>/<code>pause</code> e <code>next</code> non avranno alcun effetto.
+            </p>
+            <img src="https://telegra.ph/file/ac8611730c81c9b6c4f05.png">
+            <h3 id="diagrammi-delle-interazioni">Diagrammi delle interazioni</h3>
+            <p>Il seguente diagramma illustra i passaggi tra le classi che 
+                dovranno avvenire a partire dal click sul pulsante per iniziare la riproduzione di un brano.
+            </p>
+            <img src="https://telegra.ph/file/a121392e250a6c7f0b2c0.png">
+            <p>La scelta di una cartella da aggiungere porterà invece ad una catena simile alla seguente</p>
+            <img src="https://telegra.ph/file/ba6a68ad1eedf92523534.png">
+
+
+  <h2 id="design-pattern">Design pattern utilizzati</h2>
+  <ul>
+<li><b>Singleton</b> in <code>Data</code></li>
+<li><b>State</b> in <code>Player</code></li>
+<li><b>Observer</b> tra <code>Data</code> e <code>TracklistModel</code> e tra <code>TracklistModel</code> e <code>TracklistView</code></li>
+<li><b>Model-View-Controller</b> in <code>Library</code>, <code>Local</code> e <code>Player</code></li>
+</ul>
